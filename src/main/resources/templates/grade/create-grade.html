@@ -59,7 +59,7 @@
     fetch('http://localhost:8080/student')
         .then(response => response.json())
         .then(studentsData => {
-            studentsData.forEach(student => {
+            studentsData.content.forEach(student => {
                 const option = document.createElement('option');
                 option.value = student.id;
                 option.text = student.name + ' ' + student.surname;
@@ -75,7 +75,7 @@
     fetch('http://localhost:8080/project')
         .then(response => response.json())
         .then(projectsData => {
-            projectsData.forEach(project => {
+            projectsData.content.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project.id;
                 option.text = project.name;
