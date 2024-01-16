@@ -40,6 +40,8 @@
         <tbody id="table-body">
         </tbody>
     </table>
+    <button id="prevPage" class="page-button">Previous Page</button>
+    <button id="nextPage" class="page-button">Next Page</button>
 
     <script>
         function populateTable(data) {
@@ -71,19 +73,47 @@
             });
         }
 
-        fetch('http://localhost:8080/project')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                populateTable(data);
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+        let currentPage = 0;
+        const pageSize = 10; // Adjust the page size as needed
+
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                fetchData();
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            currentPage++;
+            fetchData();
+        });
+
+        function clearTable() {
+            const tbody = document.getElementById('table-body');
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+        }
+
+        function fetchData() {
+            clearTable(); // Clear the table before fetching new data
+
+            fetch(`http://localhost:8080/project?page=${currentPage}&size=${pageSize}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    populateTable(data.content); // Assuming the response contains a 'content' property
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        fetchData();
     </script>
 </div>
 

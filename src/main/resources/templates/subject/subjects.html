@@ -41,37 +41,58 @@
         </tbody>
     </table>
 
-    <script>
-        function populateTable(data) {
-            const tbody = document.getElementById('table-body');
+    <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="pageInfo">Page 1</span>
+        <button id="nextPage">Next</button>
+    </div>
+</div>
 
-            data.forEach(subject => {
-                const row = document.createElement('tr');
+<script>
+    function populateTable(data) {
+        const tbody = document.getElementById('table-body');
 
-                const idCell = document.createElement('td');
-                idCell.innerHTML = subject.id;
-                const abbreviationCell = document.createElement('td');
-                abbreviationCell.textContent = subject.abbreviation;
-                const teacherCell = document.createElement('td');
-                teacherCell.textContent = subject.teacher;
-                const linkCell = document.createElement('td');
-                const linkElement = document.createElement('a');
-                linkElement.href = '../subject/subject.html?id=' + subject.id;
-                linkElement.classList.add('page-button');
-                linkElement.textContent = 'Info';
+        data.forEach(subject => {
+            const row = document.createElement('tr');
 
-                linkCell.appendChild(linkElement);
+            const idCell = document.createElement('td');
+            idCell.innerHTML = subject.id;
+            const abbreviationCell = document.createElement('td');
+            abbreviationCell.textContent = subject.abbreviation;
+            const teacherCell = document.createElement('td');
+            teacherCell.textContent = subject.teacher;
+            const linkCell = document.createElement('td');
+            const linkElement = document.createElement('a');
+            linkElement.href = '../subject/subject.html?id=' + subject.id;
+            linkElement.classList.add('page-button');
+            linkElement.textContent = 'Info';
 
-                row.appendChild(idCell);
-                row.appendChild(abbreviationCell);
-                row.appendChild(teacherCell);
-                row.appendChild(linkCell)
+            linkCell.appendChild(linkElement);
 
-                tbody.appendChild(row);
-            });
+            row.appendChild(idCell);
+            row.appendChild(abbreviationCell);
+            row.appendChild(teacherCell);
+            row.appendChild(linkCell)
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function updatePageInfo() {
+        document.getElementById('pageInfo').textContent = `Page ${currentPage + 1}`;
+    }
+
+    function clearTable() {
+        const tbody = document.getElementById('table-body');
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
         }
+    }
 
-        fetch('http://localhost:8080/subject')
+    function fetchSubjects(page, size) {
+        clearTable();
+
+        fetch(`http://localhost:8080/subject?page=${page}&size=${size}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -80,12 +101,31 @@
             })
             .then(data => {
                 populateTable(data);
+                updatePageInfo();
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-    </script>
-</div>
+    }
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            fetchSubjects(currentPage, pageSize);
+        }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+        currentPage++;
+        fetchSubjects(currentPage, pageSize);
+    });
+
+    let currentPage = 0;
+    const pageSize = 10;
+
+    fetchSubjects(currentPage, pageSize);
+
+</script>
 
 </body>
 </html>

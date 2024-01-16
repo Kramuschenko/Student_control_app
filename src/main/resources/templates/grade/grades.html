@@ -42,41 +42,74 @@
         <tbody id="table-body">
         </tbody>
     </table>
+    <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="currentPage">Page 1</span>
+        <button id="nextPage">Next</button>
+    </div>
 
-    <script>
-        function populateTable(data) {
-            const tbody = document.getElementById('table-body');
+</div>
 
-            data.forEach(grade => {
-                const row = document.createElement('tr');
+<script>
+    function populateTable(data) {
+        const tbody = document.getElementById('table-body');
 
-                const idCell = document.createElement('td');
-                idCell.innerHTML = grade.id;
-                const projectCell = document.createElement('td');
-                projectCell.textContent = grade.projectName;
-                const studentCell = document.createElement('td');
-                studentCell.textContent = grade.name + ' ' + grade.surname;
-                const gradeCell = document.createElement('td');
-                gradeCell.textContent = grade.grade;
-                const linkCell = document.createElement('td');
-                const linkElement = document.createElement('a');
-                linkElement.href = '../grade/grade.html?id=' + grade.id;
-                linkElement.classList.add('page-button');
-                linkElement.textContent = 'Info';
+        data.forEach(grade => {
+            const row = document.createElement('tr');
 
-                linkCell.appendChild(linkElement);
+            const idCell = document.createElement('td');
+            idCell.innerHTML = grade.id;
+            const projectCell = document.createElement('td');
+            projectCell.textContent = grade.projectName;
+            const studentCell = document.createElement('td');
+            studentCell.textContent = grade.name + ' ' + grade.surname;
+            const gradeCell = document.createElement('td');
+            gradeCell.textContent = grade.grade;
+            const linkCell = document.createElement('td');
+            const linkElement = document.createElement('a');
+            linkElement.href = '../grade/grade.html?id=' + grade.id;
+            linkElement.classList.add('page-button');
+            linkElement.textContent = 'Info';
 
-                row.appendChild(idCell);
-                row.appendChild(projectCell);
-                row.appendChild(studentCell);
-                row.appendChild(gradeCell);
-                row.appendChild(linkCell)
+            linkCell.appendChild(linkElement);
 
-                tbody.appendChild(row);
-            });
+            row.appendChild(idCell);
+            row.appendChild(projectCell);
+            row.appendChild(studentCell);
+            row.appendChild(gradeCell);
+            row.appendChild(linkCell)
+
+            tbody.appendChild(row);
+        });
+    }
+
+    let currentPage = 0;
+    const pageSize = 10;
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            fetchData();
         }
+    });
 
-        fetch('http://localhost:8080/grade')
+    document.getElementById('nextPage').addEventListener('click', () => {
+        currentPage++;
+        fetchData();
+    });
+
+
+    function clearTable() {
+        const tbody = document.getElementById('table-body');
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+    }
+
+    function fetchData() {
+        clearTable(); // Clear the table before fetching new data
+
+        fetch(`http://localhost:8080/grade?page=${currentPage}&size=${pageSize}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -84,13 +117,22 @@
                 return response.json();
             })
             .then(data => {
-                populateTable(data);
+                populateTable(data.content);
+                updatePageInfo();
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-    </script>
-</div>
+    }
 
+
+    function updatePageInfo() {
+        document.getElementById('currentPage').textContent = `Page ${currentPage + 1}`;
+    }
+
+    // Initial data fetch
+    fetchData();
+
+</script>
 </body>
 </html>

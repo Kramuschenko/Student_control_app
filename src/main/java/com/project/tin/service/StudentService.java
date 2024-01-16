@@ -12,6 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,8 +31,9 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final ProjectRepository projectRepository;
 
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public Page<Student> getAllStudents(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return studentRepository.findAll(pageable);
     }
 
     public StudentDto getStudentById(Integer id) {

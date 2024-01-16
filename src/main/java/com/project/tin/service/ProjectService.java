@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,8 +35,10 @@ public class ProjectService {
     private final SubjectRepository subjectRepository;
     private final StudentRepository studentRepository;
 
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+
+    public Page<Project> getAllProjects(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return projectRepository.findAll(pageable);
     }
 
     public List<Project> getEmptyProjects() {

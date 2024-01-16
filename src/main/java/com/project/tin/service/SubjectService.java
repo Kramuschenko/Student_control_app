@@ -10,6 +10,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.beans.Transient;
@@ -29,8 +32,10 @@ public class SubjectService {
 
     private final SubjectRepository subjectRepository;
 
-    public List<Subject> getAllSubjects() {
-        return subjectRepository.findAll();
+    public List<Subject> getAllSubjects(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Subject> subjectPage = subjectRepository.findAll(pageable);
+        return subjectPage.getContent();
     }
 
     public Subject getSubjectById(Integer id) {

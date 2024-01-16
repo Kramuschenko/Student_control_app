@@ -10,6 +10,8 @@ import com.project.tin.dto.GradeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,12 +28,10 @@ public class GradeService {
     private final ProjectRepository projectRepository;
     private final StudentRepository studentRepository;
 
-    public List<GradeDto> getAllGrades() {
-        List<Grade> grades = gradeRepository.findAll();
+    public Page<GradeDto> getAllGrades(Pageable pageable) {
+        Page<Grade> grades = gradeRepository.findAll(pageable);
 
-        return grades.stream()
-                .map(this::toDto)
-                .toList();
+        return grades.map(this::toDto);
     }
 
     private GradeDto toDto(Grade grade) {

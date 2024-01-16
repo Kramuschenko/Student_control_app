@@ -21,8 +21,12 @@
     <div class="login form-section">
       <h2>Login</h2>
       <form id="loginForm">
-        <input type="email" placeholder="Email" name="username">
-        <input type="password" placeholder="Password" name="password">
+        <label>
+          <input type="email" placeholder="Email" name="username">
+        </label>
+        <label>
+          <input type="password" placeholder="Password" name="password">
+        </label>
         <button type="submit" class="button">Login</button>
       </form>
     </div>
@@ -30,10 +34,18 @@
     <div class="register form-section">
       <h2>Register</h2>
       <form id="registerForm">
-        <input type="email" placeholder="Email" name="username">
-        <input type="text" placeholder="Password" name="password1">
-        <input type="text" placeholder="Repeat password" name="password2">
-        <br>Admin account?  <input type="checkbox" placeholder="Admin account" name="isAdmin">
+        <label>
+          <input type="email" placeholder="Email" name="email">
+        </label>
+        <label>
+          <input type="text" placeholder="Password" name="password1">
+        </label>
+        <label>
+          <input type="text" placeholder="Repeat password" name="password2">
+        </label>
+        <br>Admin account? <label>
+        <input type="checkbox" placeholder="Admin account" name="isAdmin">
+      </label>
         <button type="submit" class="button">Register</button>
       </form>
     </div>
@@ -70,13 +82,13 @@
   document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const username = document.querySelector('[name="username"]').value;
+    const username = document.querySelector('[name="email"]').value;
     const password1 = document.querySelector('[name="password1"]').value;
     const password2 = document.querySelector('[name="password2"]').value;
     const isAdminCheckbox = document.querySelector('[name="isAdmin"]');
     const isAdmin = isAdminCheckbox.checked;
 
-    alert(isAdmin);
+    alert(username)
 
     if (password1 !== password2) {
       alert('Passwords do not match');
