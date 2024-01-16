@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Student</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+
+    <h1>Edit Student</h1>
+    <form id="editStudentForm">
+        <div class="form-group">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="id" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+        </div>
+
+        <div class="form-group">
+            <label for="surname">Surname:</label>
+            <input type="text" id="surname" name="surname">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="action-button">Update Student</button>
+            <a href="students.html" class="action-button back-button">Back</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const studentId = urlParams.get('id');
+
+    fetch(`http://localhost:8080/student/id/${studentId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('id').value = data.id;
+            document.getElementById('name').value = data.name;
+            document.getElementById('surname').value = data.surname;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+
+    const editStudentForm = document.getElementById('editStudentForm');
+    editStudentForm.addEventListener('submit', event => {
+        event.preventDefault();
+
+        const updatedStudent = {
+            id: document.getElementById('id').value,
+            name: document.getElementById('name').value,
+            surname: document.getElementById('surname').value,
+        };
+
+        fetch('http://localhost:8080/student/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedStudent),
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Student updated successfully');
+                    window.location.href = 'students.html';
+                } else {
+                    alert('Failed to update student');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+</body>
+</html>

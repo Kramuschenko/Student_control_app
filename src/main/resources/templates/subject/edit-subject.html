@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Subject</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+    <!-- HTML -->
+    <h1>Edit Subject</h1>
+    <form id="editSubjectForm">
+        <input type="hidden" id="subjectId" name="id">
+        <div class="form-group">
+            <label for="abbreviation">Abbreviation:</label>
+            <input type="text" id="abbreviation" name="abbreviation" required>
+        </div>
+
+        <div class="form-group">
+            <label for="teacher">Teacher:</label>
+            <input type="text" id="teacher" name="teacher" required>
+        </div>
+
+        <div class="form-group">
+            <label for="projectIds">Select Projects:</label>
+            <select multiple id="projectIds" name="projectIds">
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="action-button">Update Subject</button>
+            <a href="subjects.html" class="action-button back-button">Back to Subjects</a>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    const selectedProjectsDropdown = document.getElementById('projectIds');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const editSubjectForm = document.getElementById('editSubjectForm');
+
+        // Fetch the subject details and populate the form
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectId = urlParams.get('id');
+
+        fetch(`http://localhost:8080/subject/id/${subjectId}`)
+            .then(response => response.json())
+            .then(subjectData => {
+                document.getElementById('subjectId').value = subjectData.id;
+                document.getElementById('abbreviation').value = subjectData.abbreviation;
+                document.getElementById('teacher').value = subjectData.teacher;
+                fetch(`http://localhost:8080/project/empty/${subjectId}`)
+                    .then(response => response.json())
+                    .then(projectsData => {
+                        projectsData.forEach(project => {
+                            const option = document.createElement('option');
+                            option.value = project.id;
+                            option.text = project.name;
+
+                            if (subjectData.projects.includes(project.id)) {
+                                option.selected = true;
+                            }
+
+                            selectedProjectsDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching projects data:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching subject data:', error);
+            });
+
+        editSubjectForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(editSubjectForm);
+            const data = {};
+
+            const projectIds = Array.from(selectedProjectsDropdown.selectedOptions).map(option => parseInt(option.value, 10));
+
+            formData.forEach((value, key) => {
+                data[key] = key === "projectIds" ? projectIds : value;
+            });
+
+            fetch('http://localhost:8080/subject/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Subject updated successfully');
+                        window.location.href = 'subjects.html';
+                    } else {
+                        alert('Failed to update subject');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+
+</script>
+
+</body>
+</html>

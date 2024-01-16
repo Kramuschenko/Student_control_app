@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Grade</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+
+    <h1>Edit Grade</h1>
+    <form id="editGradeForm">
+        <div class="form-group">
+            <label for="id">Grade ID:</label>
+            <input type="text" id="id" name="id" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="studentId">Student:</label>
+            <select id="studentId" name="studentId" required>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="projectId">Project:</label>
+            <select id="projectId" name="projectId" required>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="grade">Grade:</label>
+            <input type="text" id="grade" name="grade" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="action-button">Update Grade</button>
+            <a href="grades.html" class="action-button back-button">Back to Grades</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const studentSelect = document.getElementById('studentId');
+    const projectSelect = document.getElementById('projectId');
+
+    fetch('http://localhost:8080/student')
+        .then(response => response.json())
+        .then(studentsData => {
+            studentsData.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.text = student.name + ' ' + student.surname;
+                studentSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching students data:', error);
+        });
+
+    fetch('http://localhost:8080/project')
+        .then(response => response.json())
+        .then(projectsData => {
+            projectsData.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.text = project.name;
+                projectSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching projects data:', error);
+        });
+
+    // Fetch and populate the grade details for editing
+    const urlParams = new URLSearchParams(window.location.search);
+    const gradeId = urlParams.get('id');
+
+    fetch(`http://localhost:8080/grade/id/${gradeId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('id').value = data.id;
+            document.getElementById('studentId').value = data.studentId;
+            document.getElementById('projectId').value = data.projectId;
+            document.getElementById('grade').value = data.grade;
+        })
+        .catch(error => {
+            console.error('Error fetching grade data:', error);
+        });
+
+    const editGradeForm = document.getElementById('editGradeForm');
+
+    editGradeForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(editGradeForm);
+        const data = {};
+
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        fetch('http://localhost:8080/grade/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Grade updated successfully');
+                    window.location.href = 'grades.html';
+                } else {
+                    alert('Failed to update grade');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+</body>
+</html>

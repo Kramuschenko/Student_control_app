@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change User Information</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="change-info.html">Change User Information</a>
+            <a href="login.html">Log Out</a>
+        </div>
+    </div>
+
+    <h1>Change Your Information</h1>
+    <form id="changeInfoForm">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter new name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter new email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" placeholder="Enter new password" required>
+        </div>
+
+
+        <div class="form-actions">
+            <button type="submit" class="action-button">Update Information</button>
+            <a href="../main.html" class="action-button back-button">Go Back</a>
+        </div>
+    </form>
+</div>
+
+</body>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Subject</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+    <!-- HTML -->
+    <h1>Edit Subject</h1>
+    <form id="editProjectForm">
+        <div class="form-group">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="id" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Comment:</label>
+            <input type="text" id="comment" name="comment">
+        </div>
+
+        <div class="form-group">
+            <label for="subjectId">Select Subject:</label>
+            <select id="subjectId" name="subjectId">
+                <option value="">No Subject</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="studentIds">Assign Students:</label>
+            <select multiple id="studentIds" name="studentIds">
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="action-button">Update Project</button>
+            <a href="projects.html" class="action-button back-button">Back to Projects</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    fetch('http://localhost:8080/subject')
+        .then(response => response.json())
+        .then(subjectsData => {
+            const subjectDropdown = document.getElementById('subjectId');
+
+            subjectsData.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.text = subject.abbreviation;
+                subjectDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching subjects data:', error);
+        });
+
+    const studentsMultiSelect = document.getElementById('studentIds');
+
+    fetch('http://localhost:8080/student')
+        .then(response => response.json())
+        .then(studentsData => {
+            studentsData.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.text = student.name + " " + student.surname;
+                studentsMultiSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching students data:', error);
+        });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const editProjectForm = document.getElementById('editProjectForm');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectId = urlParams.get('id');
+
+        fetch(`http://localhost:8080/project/id/${subjectId}`)
+            .then(response => response.json())
+            .then(subjectData => {
+                document.getElementById('id').value = subjectData.id;
+                document.getElementById('name').value = subjectData.name;
+                document.getElementById('comment').value = subjectData.comment;
+            })
+            .catch(error => {
+                console.error('Error fetching project data:', error);
+            });
+
+        editProjectForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(editProjectForm);
+            const data = {};
+
+            const projectIds = Array.from(studentsMultiSelect.selectedOptions).map(option => parseInt(option.value, 10));
+
+            formData.forEach((value, key) => {
+                data[key] = key === "studentIds" ? projectIds : value;
+            });
+
+            fetch('http://localhost:8080/project/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Project updated successfully');
+                        window.location.href = 'projects.html';
+                    } else {
+                        alert('Failed to update project');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+
+</script>
+
+</body>
+</html>

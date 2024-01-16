@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grades</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+
+    <h1>Grades List</h1>
+    <a href="../main.html" class="action-button back-button">Back</a>
+    <a href="create-grade.html" class="create-button">Create New Grade</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Grade ID</th>
+            <th>Project</th>
+            <th>Student</th>
+            <th>Grade</th>
+            <th>Info</th>
+        </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
+
+    <script>
+        function populateTable(data) {
+            const tbody = document.getElementById('table-body');
+
+            data.forEach(grade => {
+                const row = document.createElement('tr');
+
+                const idCell = document.createElement('td');
+                idCell.innerHTML = grade.id;
+                const projectCell = document.createElement('td');
+                projectCell.textContent = grade.projectName;
+                const studentCell = document.createElement('td');
+                studentCell.textContent = grade.name + ' ' + grade.surname;
+                const gradeCell = document.createElement('td');
+                gradeCell.textContent = grade.grade;
+                const linkCell = document.createElement('td');
+                const linkElement = document.createElement('a');
+                linkElement.href = '../grade/grade.html?id=' + grade.id;
+                linkElement.classList.add('page-button');
+                linkElement.textContent = 'Info';
+
+                linkCell.appendChild(linkElement);
+
+                row.appendChild(idCell);
+                row.appendChild(projectCell);
+                row.appendChild(studentCell);
+                row.appendChild(gradeCell);
+                row.appendChild(linkCell)
+
+                tbody.appendChild(row);
+            });
+        }
+
+        fetch('http://localhost:8080/grade')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                populateTable(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    </script>
+</div>
+
+</body>
+</html>

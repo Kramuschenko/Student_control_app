@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="../css/styles.css">
+  <meta charset="UTF-8">
+  <title>Login</title>
+</head>
+<body>
+
+<div class="container">
+
+  <a href="../main.html">Continue as guest</a>
+
+  <div class="forms-container">
+    <input type="radio" name="toggle" id="login-toggle" checked="checked">
+    <input type="radio" name="toggle" id="register-toggle">
+
+    <label for="login-toggle" class="btn">Login</label>
+    <label for="register-toggle" class="btn">Register</label>
+
+    <div class="login form-section">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="email" placeholder="Email" name="username">
+        <input type="password" placeholder="Password" name="password">
+        <button type="submit" class="button">Login</button>
+      </form>
+    </div>
+
+    <div class="register form-section">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="email" placeholder="Email" name="username">
+        <input type="text" placeholder="Password" name="password1">
+        <input type="text" placeholder="Repeat password" name="password2">
+        <br>Admin account?  <input type="checkbox" placeholder="Admin account" name="isAdmin">
+        <button type="submit" class="button">Register</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const username = document.getElementsByName('username')[0].value;
+    const password = document.getElementsByName('password')[0].value;
+
+    fetch('http://localhost:8080/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    })
+            .then(response => {
+              if (response.ok) {
+                alert('Login successful');
+                window.location.href = '../main.html';
+              } else {
+                alert('Invalid credentials');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+  });
+
+  document.getElementById('registerForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const username = document.querySelector('[name="username"]').value;
+    const password1 = document.querySelector('[name="password1"]').value;
+    const password2 = document.querySelector('[name="password2"]').value;
+    const isAdminCheckbox = document.querySelector('[name="isAdmin"]');
+    const isAdmin = isAdminCheckbox.checked;
+
+    alert(isAdmin);
+
+    if (password1 !== password2) {
+      alert('Passwords do not match');
+      return;
+    }
+
+    fetch('http://localhost:8080/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password: password1, isAdmin })
+    })
+            .then(response => {
+              if (response.ok) {
+                alert('Registration successful');
+              } else {
+                alert('Registration failed');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+  });
+
+</script>
+
+</body>
+</html>

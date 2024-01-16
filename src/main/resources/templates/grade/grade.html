@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Grade</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+
+    <h1>Grade details</h1>
+
+    <div class="actions">
+        <a href="grades.html" class="action-button back-button">Back</a>
+        <a id="edit-grade" class="action-button">Edit Grade</a>
+        <button type="button" id="deleteGradeButton" class="action-button delete-button">Delete Grade</button>
+    </div>
+
+    <form id="gradeEditForm">
+        <div class="form-group">
+            <label for="id">Grade ID:</label>
+            <input type="text" id="id" name="id" value="1" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="projectName">Project: </label>
+            <br>
+            <a type="text" id="projectName"></a>
+        </div>
+
+        <div class="form-group">
+            <label for="student">Student: </label>
+            <br>
+            <a type="text" id="student"></a>
+        </div>
+
+        <div class="form-group">
+            <label for="grade">Grade:</label>
+            <input type="text" id="grade" name="grade" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="createdAt">Created At:</label>
+            <input type="text" id="createdAt" name="createdAt" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="modifiedAt">Modified At:</label>
+            <input type="text" id="modifiedAt" name="modifiedAt" readonly>
+        </div>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const gradeId = urlParams.get('id');
+    const deleteGradeButton = document.getElementById('deleteGradeButton');
+
+    deleteGradeButton.addEventListener('click', function () {
+        if (confirm('Are you sure you want to delete this grade?')) {
+            fetch(`http://localhost:8080/grade/id/${gradeId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Grade deleted successfully');
+                        window.location.href = 'grades.html';
+                    } else {
+                        alert('Failed to delete grade');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    });
+
+    fetch(`http://localhost:8080/grade/id/${gradeId}`)
+        .then(response => response.json())
+        .then(grade => {
+            document.getElementById('id').value = grade.id;
+
+            const projectLink = document.createElement('a');
+            projectLink.href = `../project/project.html?id=${grade.projectId}`;
+            projectLink.textContent = grade.projectName;
+
+            const projectNameElement = document.getElementById('projectName');
+            projectNameElement.innerHTML = '';
+            projectNameElement.appendChild(projectLink);
+
+            const studentLink = document.createElement('a');
+            studentLink.href = `../student/student.html?id=${grade.projectId}`;
+            studentLink.textContent = grade.name + " " + grade.surname
+
+            document.getElementById('grade').value = grade.grade;
+            document.getElementById('createdAt').value = grade.createdAt;
+            document.getElementById('modifiedAt').value = grade.modifiedAt;
+
+            const studentNameElement = document.getElementById('student');
+            studentNameElement.innerHTML = '';
+            studentNameElement.appendChild(studentLink);
+
+            document.getElementById('edit-grade').href = '../grade/edit-grade.html?id=' + gradeId;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subjects List</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="page-selection">
+        <a href="../main.html" class="page-button">Main</a>
+        <a href="../subject/subjects.html" class="page-button">Subjects</a>
+        <a href="../project/projects.html" class="page-button">Projects</a>
+        <a href="../student/students.html" class="page-button">Students</a>
+        <a href="../grade/grades.html" class="page-button">Grades</a>
+    </div>
+
+    <div class="settings-menu">
+        <div class="settings-button">⚙️ Settings</div>
+        <div class="dropdown-content">
+            <a href="../login/change-info.html">Change User Information</a>
+            <a href="../login/login.html">Log Out</a>
+        </div>
+    </div>
+
+    <h1>Subjects</h1>
+    <a href="../main.html" class="action-button back-button">Back</a>
+    <a href="create-subject.html" class="create-button">Create New Subject</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Abbreviation</th>
+            <th>Teacher</th>
+            <th>Info</th>
+        </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
+
+    <script>
+        function populateTable(data) {
+            const tbody = document.getElementById('table-body');
+
+            data.forEach(subject => {
+                const row = document.createElement('tr');
+
+                const idCell = document.createElement('td');
+                idCell.innerHTML = subject.id;
+                const abbreviationCell = document.createElement('td');
+                abbreviationCell.textContent = subject.abbreviation;
+                const teacherCell = document.createElement('td');
+                teacherCell.textContent = subject.teacher;
+                const linkCell = document.createElement('td');
+                const linkElement = document.createElement('a');
+                linkElement.href = '../subject/subject.html?id=' + subject.id;
+                linkElement.classList.add('page-button');
+                linkElement.textContent = 'Info';
+
+                linkCell.appendChild(linkElement);
+
+                row.appendChild(idCell);
+                row.appendChild(abbreviationCell);
+                row.appendChild(teacherCell);
+                row.appendChild(linkCell)
+
+                tbody.appendChild(row);
+            });
+        }
+
+        fetch('http://localhost:8080/subject')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                populateTable(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    </script>
+</div>
+
+</body>
+</html>
